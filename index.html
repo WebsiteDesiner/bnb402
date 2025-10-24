@@ -909,7 +909,7 @@
                 <a class="nav-link" onclick="openDocs()">
                     📚 Docs
                 </a>
-                <a href="https://x.com/bnb402_bsc" target="_blank" class="nav-link x-link">
+                <a href="https://x.com/bnb402token" target="_blank" class="nav-link x-link">
                     <img src="X.png" alt="X" class="x-icon">
                     Follow Us
                 </a>
@@ -973,7 +973,7 @@
                     <pre><code>1. Connect your BSC-compatible wallet (MetaMask, Trust Wallet, etc.)
 2. Ensure you have BNB for gas fees
 3. Choose the number of batches (1 batch = 0.001 BNB)
-4. Click "批量请求mint api"
+4. Click "Batch Request Mint API"
 5. Confirm the transaction in your wallet
 6. Receive BNB402 tokens instantly</code></pre>
 
@@ -1039,7 +1039,7 @@ Liquidity:        Automatic on PancakeSwap</code></pre>
             <div class="header-content">
                 <div class="header-text">
                     <h1>BNBNB402 API Documentation <span class="protocol-badge">Based on X402 Protocol</span></h1>
-                    <div class="subtitle">Interact with BNBNB402 token contract on BSC - X402协议的BSC实现版本</div>
+                    <div class="subtitle">Interact with BNB402 token contract on BSC - BSC Implementation of X402 Protocol</div>
                 </div>
                 <div class="header-image">
                     <a href="https://bscscan.com/address/0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C" target="_blank" class="bscscan-link">
@@ -1162,7 +1162,7 @@ Liquidity:        Automatic on PancakeSwap</code></pre>
                     </div>
                 </div>
 
-        <!-- Batch Mint API - 放在最下面 -->
+        <!-- Batch Mint API - Placed at the bottom -->
         <div class="api-section">
             <div class="api-header" onclick="toggleSection(this)">
                 <span class="method-badge method-post">POST</span>
@@ -1172,7 +1172,6 @@ Liquidity:        Automatic on PancakeSwap</code></pre>
             <div class="api-content">
                 <div class="api-description">
                     Batch mint BNB402 tokens by sending BNB to the contract. Default 0.001 BNB per mint, can adjust batch count.
-                    批量铸造BNB402代币，通过向合约地址转账BNB实现。默认每次0.001 BNB，可调整批量次数。
             </div>
 
                 <div class="section-title">BATCH MINT INTERFACE</div>
@@ -1224,7 +1223,7 @@ Liquidity:        Automatic on PancakeSwap</code></pre>
     </div>
 
                     <button class="mint-button" id="mintButton" onclick="executeBatchMint()">
-                        批量请求mint api
+                        Batch Request Mint API
                     </button>
                 </div>
 
@@ -1612,25 +1611,25 @@ Liquidity:        Automatic on PancakeSwap</code></pre>
                 console.error('Batch mint error:', error);
                 
                 // Handle specific error cases
-                let errorMessage = '铸造失败';
+                let errorMessage = 'Mint failed';
                 if (error.message.includes('insufficient funds')) {
-                    errorMessage = '余额不足，请检查BNB余额';
+                    errorMessage = 'Insufficient balance, please check your BNB balance';
                 } else if (error.message.includes('user rejected')) {
-                    errorMessage = '用户取消了交易';
+                    errorMessage = 'User cancelled the transaction';
                 } else if (error.message.includes('gas')) {
-                    errorMessage = 'Gas费用不足，请增加Gas限制';
+                    errorMessage = 'Insufficient gas, please increase gas limit';
                 } else if (error.message.includes('execution reverted')) {
-                    errorMessage = '合约执行失败，请检查合约状态';
+                    errorMessage = 'Contract execution failed, please check contract status';
                 } else if (error.message.includes('Transfer is restricted')) {
-                    errorMessage = '转账被限制，请稍后重试';
+                    errorMessage = 'Transfer is restricted, please try again later';
                 } else {
-                    errorMessage = error.message || '铸造失败，请重试';
+                    errorMessage = error.message || 'Mint failed, please try again';
                 }
                 
                 showToast(errorMessage, 'error');
             } finally {
                 mintButton.disabled = false;
-                mintButton.innerHTML = '批量请求mint api';
+                mintButton.innerHTML = 'Batch Request Mint API';
             }
         }
 
