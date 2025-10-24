@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNB402 Token - BSC (Based on X402 Protocol)</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="shortcut icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.9.0/dist/web3.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #333;
+            --text-secondary: #7f8c8d;
+            --border-color: #ecf0f1;
+            --accent-color: #f0b90b;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #a3a3a3;
+            --border-color: #2d2d2d;
+            --accent-color: #f0b90b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .logo-image {
+            height: 32px;
+            width: auto;
+            max-width: 120px;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+
+        .network-badge {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .contract-address {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .contract-address:hover {
+            border-color: var(--accent-color);
+        }
+
+        .nav-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .bnb-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .bscscan-link {
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .bscscan-link:hover {
+            transform: scale(1.05);
+        }
+
+        .x-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .x-link:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .x-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .x-link:hover .x-icon {
+            transform: scale(1.1);
+        }
+
+        .bnb-balance {
+            background: rgba(240, 185, 11, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .connect-btn {
+            background: var(--accent-color);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(240, 185, 11, 0.3);
+        }
+
+        .connect-btn.connected {
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
+        .theme-toggle {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-color);
+        }
+
+        /* Documentation Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: var(--bg-primary);
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(80vh - 80px);
+        }
+
+        /* GitHub-like Documentation Styles */
+        .doc-content {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .doc-content h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .doc-content h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .doc-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        .doc-content p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .doc-content code {
+            background: rgba(240, 185, 11, 0.1);
+            color: var(--accent-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+
+        .doc-content pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .doc-content pre code {
+            background: none;
+            color: var(--text-primary);
+            padding: 0;
+        }
+
+        .doc-content ul {
+            margin-bottom: 16px;
+            padding-left: 30px;
+        }
+
+        .doc-content li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .doc-content .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-warning {
+            background: rgba(240, 185, 11, 0.1);
+            color: var(--accent-color);
+        }
+
+        .badge-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .badge-info {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        .header-image {
+            flex-shrink: 0;
+        }
+
+        .bscscan-image {
+            max-width: 200px;
+            max-height: 120px;
+            width: auto;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .bscscan-image:hover {
+            transform: scale(1.05);
+        }
+
+        .protocol-badge {
+            display: inline-block;
+            background: rgba(240, 185, 11, 0.1);
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .api-section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .api-header {
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .api-header:hover {
+            background: rgba(240, 185, 11, 0.05);
+        }
+
+        .api-header.active {
+            background: rgba(240, 185, 11, 0.08);
+        }
+
+        .method-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .method-get {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .method-post {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        [data-theme="dark"] .method-get {
+            background: rgba(46, 125, 50, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(46, 125, 50, 0.3);
+        }
+
+        [data-theme="dark"] .method-post {
+            background: rgba(21, 101, 192, 0.1);
+            color: #2196f3;
+            border: 1px solid rgba(21, 101, 192, 0.3);
+        }
+
+        .api-path {
+            flex: 1;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.95em;
+            color: var(--text-primary);
+        }
+
+        .expand-icon {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .api-content {
+            padding: 30px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .api-content.show {
+            display: block;
+        }
+
+        .api-description {
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .no-params {
+            color: var(--text-secondary);
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        .try-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #f39c12 100%);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+
+        .try-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 185, 11, 0.4);
+        }
+
+        .response-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .response-container.show {
+            display: block;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            line-height: 1.6;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        [data-theme="dark"] .code-block {
+            background: #0d0d0d;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        .json-key { color: #90cdf4; }
+        .json-string { color: #9ae6b4; }
+        .json-number { color: #fbb6ce; }
+        .json-boolean { color: #f6ad55; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        [data-theme="dark"] .status-success {
+            background: rgba(46, 125, 50, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(46, 125, 50, 0.3);
+        }
+
+        /* Batch Mint Form */
+        .mint-form-container {
+            background: rgba(240, 185, 11, 0.05);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .batch-input-container {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .mint-input {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 16px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .mint-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(240, 185, 11, 0.1);
+        }
+
+        .times-input {
+            width: 120px;
+        }
+
+        .multiply-sign {
+            font-size: 20px;
+            color: var(--text-secondary);
+            padding: 10px;
+        }
+
+        .equals-sign {
+            font-size: 20px;
+            color: var(--text-secondary);
+            padding: 10px;
+        }
+
+        .total-amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+            padding: 12px 20px;
+            background: rgba(240, 185, 11, 0.1);
+            border-radius: 6px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .mint-info {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mint-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .mint-info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .mint-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #f39c12 100%);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mint-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 185, 11, 0.4);
+        }
+
+        .mint-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #4caf50;
+        }
+
+        .toast.error {
+            border-left: 4px solid #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .navbar {
+                padding: 0 15px;
+            }
+            .batch-input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .times-input {
+                width: 100%;
+            }
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            .bscscan-image {
+                max-width: 150px;
+                max-height: 90px;
+            }
+            .logo-image {
+                height: 28px;
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="#" class="logo">
+                <img src="logo.png" alt="BNBNB402scan" class="logo-image">
+                <span>BNBNB402scan</span>
+            </a>
+            <div class="network-badge">🔗 BSC Mainnet</div>
+            <div class="contract-address" id="contractAddressDiv" onclick="copyAddress()">0xB79CF...0B61C</div>
+                </div>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="#" class="nav-link">
+                    <img src="bscscan.jpg" alt="BSCScan" class="nav-icon">
+                    BNB Chain
+                </a>
+                <a href="https://bscscan.com/address/0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C" target="_blank" class="nav-link">
+                    🔍 Search
+                </a>
+                <a class="nav-link" onclick="openDocs()">
+                    📚 Docs
+                </a>
+                <a href="https://x.com/bnb402_bsc" target="_blank" class="nav-link x-link">
+                    <img src="X.png" alt="X" class="x-icon">
+                    Follow Us
+                </a>
+            </div>
+            <div class="bnb-balance" id="bnbBalanceDiv" style="display: none;">
+                <img src="B.jpg" alt="BNB" class="bnb-icon">
+                <span id="balanceAmount">0.0000 BNB</span>
+            </div>
+            <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+                    Connect Wallet
+                </button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            </div>
+    </nav>
+
+    <!-- Documentation Modal -->
+    <div id="docsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📚 BNBNB402 Documentation</h2>
+                <button class="close-btn" onclick="closeDocs()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="doc-content">
+                    <h1>BNBNB402 Token - BSC Implementation</h1>
+                    <p>
+                        <span class="badge badge-warning">BSC Network</span>
+                        <span class="badge badge-success">X402 Protocol</span>
+                        <span class="badge badge-info">Version 1.0</span>
+                    </p>
+
+                    <h2>🚀 Overview</h2>
+                    <p>
+                        BNB402 is a decentralized token implementation on Binance Smart Chain (BSC) based on the revolutionary <strong>X402 Payment Protocol</strong>. 
+                        This protocol introduces a new paradigm for token distribution and liquidity provision through direct BNB contributions.
+                    </p>
+
+                    <h2>📋 Contract Information</h2>
+                    <ul>
+                        <li><strong>Contract Address:</strong> <code>0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C</code></li>
+                        <li><strong>Network:</strong> Binance Smart Chain (BSC)</li>
+                        <li><strong>Token Symbol:</strong> BNB402</li>
+                        <li><strong>Total Supply:</strong> 500,000,000 BNB402</li>
+                        <li><strong>Decimals:</strong> 18</li>
+                    </ul>
+
+                    <h2>⚡ X402 Protocol Features</h2>
+                    <p>
+                        The X402 protocol introduces several innovative features that set it apart from traditional token distribution models:
+                    </p>
+                    <ul>
+                        <li><strong>Direct Minting:</strong> Users can mint tokens by sending BNB directly to the contract address</li>
+                        <li><strong>Fixed Rate:</strong> 1 BNB = 50,000,000 BNB402 tokens</li>
+                        <li><strong>Minimum Contribution:</strong> 0.001 BNB per transaction</li>
+                        <li><strong>Maximum Supply:</strong> 10,000 mints total</li>
+                        <li><strong>Automatic Liquidity:</strong> At 10 BNB collected, liquidity is automatically added to PancakeSwap</li>
+                    </ul>
+
+                    <h2>💱 How to Mint</h2>
+                    <p>Minting BNB402 tokens is simple and straightforward:</p>
+                    <pre><code>1. Connect your BSC-compatible wallet (MetaMask, Trust Wallet, etc.)
+2. Ensure you have BNB for gas fees
+3. Choose the number of batches (1 batch = 0.001 BNB)
+4. Click "批量请求mint api"
+5. Confirm the transaction in your wallet
+6. Receive BNB402 tokens instantly</code></pre>
+
+                    <h2>🔐 Security Features</h2>
+                    <ul>
+                        <li><strong>Audited Contract:</strong> Smart contract code verified on BSCScan</li>
+                        <li><strong>No Owner Privileges:</strong> Fair launch with no special privileges</li>
+                        <li><strong>Transparent Distribution:</strong> All mints are publicly visible on-chain</li>
+                        <li><strong>Automatic Liquidity Lock:</strong> Liquidity automatically locked when target is reached</li>
+                    </ul>
+
+                    <h2>📊 Tokenomics</h2>
+                    <pre><code>Total Supply:     500,000,000 BNB402
+Mint Allocation:  500,000,000 BNB402 (100%)
+Mint Price:       0.001 BNB = 50,000 BNB402
+Max Mints:        10,000 transactions
+Target BNB:       10 BNB for liquidity
+Liquidity:        Automatic on PancakeSwap</code></pre>
+
+                    <h2>🌐 Official Links</h2>
+                    <ul>
+                        <li><strong>BSCScan:</strong> <a href="https://bscscan.com/address/0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C" target="_blank">View Contract</a></li>
+                        <li><strong>PancakeSwap:</strong> Available after liquidity addition</li>
+                        <li><strong>Twitter:</strong> @BNB402Protocol</li>
+                        <li><strong>Telegram:</strong> t.me/BNB402Community</li>
+                    </ul>
+
+                    <h2>⚠️ Disclaimer</h2>
+                    <p>
+                        <strong>Important:</strong> Cryptocurrency investments carry risk. BNB402 token is experimental and based on the X402 protocol. 
+                        Please do your own research (DYOR) before participating. The developers are not responsible for any losses incurred.
+                    </p>
+
+                    <h3>Risk Factors</h3>
+                    <ul>
+                        <li>Smart contract risk</li>
+                        <li>Market volatility</li>
+                        <li>Liquidity risk</li>
+                        <li>Regulatory uncertainty</li>
+                    </ul>
+
+                    <h2>📞 Support</h2>
+                    <p>
+                        For technical support or questions about the BNB402 token and X402 protocol, please reach out through our official channels:
+                    </p>
+                    <ul>
+                        <li>Email: support@b402protocol.com</li>
+                        <li>Telegram: @BNB402Support</li>
+                        <li>GitHub: github.com/BNB402Protocol</li>
+                    </ul>
+                    </div>
+            </div>
+                    </div>
+                </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage">Message</span>
+                    </div>
+                    
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>BNBNB402 API Documentation <span class="protocol-badge">Based on X402 Protocol</span></h1>
+                    <div class="subtitle">Interact with BNBNB402 token contract on BSC - X402协议的BSC实现版本</div>
+                </div>
+                <div class="header-image">
+                    <a href="https://bscscan.com/address/0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C" target="_blank" class="bscscan-link">
+                        <img src="bscscan.jpg" alt="BNBNB402 Logo" class="bscscan-image">
+                    </a>
+                </div>
+            </div>
+                    </div>
+                    
+        <!-- Health Check API -->
+        <div class="api-section">
+            <div class="api-header" onclick="toggleSection(this)">
+                <span class="method-badge method-get">GET</span>
+                <span class="api-path">/api/health</span>
+                <span class="expand-icon">▲</span>
+                    </div>
+            <div class="api-content">
+                <div class="api-description">
+                    Check the health status of the BNB402 API service.
+                </div>
+
+                <div class="section-title">INPUT PARAMETERS</div>
+                <p class="no-params">No input parameters required.</p>
+
+                <button class="try-button" onclick="fetchHealthStatus(this)">
+                    Try It Out
+                </button>
+
+                <div class="response-container" id="health-response">
+                    <div class="section-title">RESPONSE</div>
+                    <div class="status-badge status-success">200 OK</div>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre>{
+  <span class="json-key">"status"</span>: <span class="json-string">"healthy"</span>,
+  <span class="json-key">"timestamp"</span>: <span class="json-number">1761319234567</span>,
+  <span class="json-key">"network"</span>: <span class="json-string">"BSC"</span>,
+  <span class="json-key">"protocol"</span>: <span class="json-string">"X402"</span>,
+  <span class="json-key">"version"</span>: <span class="json-string">"1.0.0"</span>
+}</pre>
+                    </div>
+                </div>
+                    </div>
+                </div>
+
+        <!-- Contract Status API -->
+        <div class="api-section">
+            <div class="api-header" onclick="toggleSection(this)">
+                <span class="method-badge method-get">GET</span>
+                <span class="api-path">/api/status</span>
+                <span class="expand-icon">▲</span>
+            </div>
+            <div class="api-content">
+                <div class="api-description">
+                    Get current contract status including mint count, total supply, and liquidity status.
+                </div>
+
+                <div class="section-title">INPUT PARAMETERS</div>
+                <p class="no-params">No input parameters required.</p>
+
+                <button class="try-button" onclick="fetchContractStatus(this)">
+                    Fetch Contract Status
+                    </button>
+
+                <div class="response-container" id="status-response">
+                    <div class="section-title">RESPONSE</div>
+                    <div class="status-badge status-success">200 OK</div>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre id="status-json">{
+  <span class="json-key">"contract"</span>: <span class="json-string">"0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C"</span>,
+  <span class="json-key">"totalSupply"</span>: <span class="json-string">"500000000 BNB402"</span>,
+  <span class="json-key">"mintCount"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"bnbCollected"</span>: <span class="json-string">"0 BNB"</span>,
+  <span class="json-key">"blockNumber"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"network"</span>: <span class="json-string">"BSC Mainnet"</span>
+}</pre>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+        <!-- Pool Status API -->
+        <div class="api-section">
+            <div class="api-header" onclick="toggleSection(this)">
+                <span class="method-badge method-get">GET</span>
+                <span class="api-path">/api/pool</span>
+                <span class="expand-icon">▲</span>
+                    </div>
+            <div class="api-content">
+                <div class="api-description">
+                    Get current pool statistics including total BNB collected, mint progress, and liquidity status.
+                    </div>
+
+                <div class="section-title">INPUT PARAMETERS</div>
+                <p class="no-params">No input parameters required.</p>
+
+                <button class="try-button" onclick="fetchPoolStatus(this)">
+                    Fetch Pool Status
+                </button>
+
+                <div class="response-container" id="pool-response">
+                    <div class="section-title">RESPONSE</div>
+                    <div class="status-badge status-success">200 OK</div>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre>{
+  <span class="json-key">"totalBnbCollected"</span>: <span class="json-string">"3.847 BNB"</span>,
+  <span class="json-key">"targetBnb"</span>: <span class="json-string">"10 BNB"</span>,
+  <span class="json-key">"progress"</span>: <span class="json-number">38.47</span>,
+  <span class="json-key">"totalMints"</span>: <span class="json-number">3847</span>,
+  <span class="json-key">"maxMints"</span>: <span class="json-number">10000</span>,
+  <span class="json-key">"mintActive"</span>: <span class="json-boolean">true</span>,
+  <span class="json-key">"liquidityAdded"</span>: <span class="json-boolean">false</span>,
+  <span class="json-key">"contractBalance"</span>: <span class="json-string">"3.847 BNB"</span>,
+  <span class="json-key">"tokensDistributed"</span>: <span class="json-string">"192,350,000 BNB402"</span>
+}</pre>
+                    </div>
+                </div>
+                    </div>
+                </div>
+
+        <!-- Batch Mint API - 放在最下面 -->
+        <div class="api-section">
+            <div class="api-header" onclick="toggleSection(this)">
+                <span class="method-badge method-post">POST</span>
+                <span class="api-path">/api/mint</span>
+                <span class="expand-icon">▲</span>
+                </div>
+            <div class="api-content">
+                <div class="api-description">
+                    Batch mint BNB402 tokens by sending BNB to the contract. Default 0.001 BNB per mint, can adjust batch count.
+                    批量铸造BNB402代币，通过向合约地址转账BNB实现。默认每次0.001 BNB，可调整批量次数。
+            </div>
+
+                <div class="section-title">BATCH MINT INTERFACE</div>
+                <div class="mint-form-container">
+                    <div class="batch-input-container">
+                        <div class="input-group">
+                            <label class="input-label">Per Mint (BNB)</label>
+                            <input type="number" 
+                                   class="mint-input" 
+                                   value="0.001" 
+                                   readonly
+                                   style="background: rgba(240, 185, 11, 0.1);">
+                        </div>
+                        <span class="multiply-sign">×</span>
+                        <div class="input-group">
+                            <label class="input-label">Batch Count</label>
+                            <input type="number" 
+                                   class="mint-input times-input" 
+                                   id="batchCount" 
+                                   value="1"
+                                   min="1"
+                                   max="10000"
+                                   onchange="updateBatchInfo()">
+                        </div>
+                        <span class="equals-sign">=</span>
+                        <div class="input-group">
+                            <label class="input-label">Total Amount</label>
+                            <div class="total-amount" id="totalAmount">0.001 BNB</div>
+        </div>
+    </div>
+
+                    <div class="mint-info">
+                        <div class="mint-info-row">
+                            <span>You will receive:</span>
+                            <span id="tokensToReceive" style="color: var(--accent-color); font-weight: 600;">50,000 BNB402</span>
+            </div>
+                        <div class="mint-info-row">
+                            <span>Exchange rate:</span>
+                            <span>1 BNB = 50,000,000 BNB402</span>
+            </div>
+                        <div class="mint-info-row">
+                            <span>Contract address:</span>
+                            <span style="font-family: monospace; font-size: 12px;">0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C</span>
+                        </div>
+                        <div class="mint-info-row">
+                            <span>Transaction type:</span>
+                            <span>Direct BNB transfer to contract</span>
+        </div>
+    </div>
+
+                    <button class="mint-button" id="mintButton" onclick="executeBatchMint()">
+                        批量请求mint api
+                    </button>
+                </div>
+
+                <div class="response-container" id="mint-response" style="display: none;">
+                    <div class="section-title">RESPONSE</div>
+                    <div class="status-badge status-success">200 OK</div>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre id="mint-response-json">{
+  <span class="json-key">"status"</span>: <span class="json-string">"success"</span>,
+  <span class="json-key">"txHash"</span>: <span class="json-string">"0x..."</span>,
+  <span class="json-key">"batchCount"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"amountMinted"</span>: <span class="json-string">"50000 BNB402"</span>,
+  <span class="json-key">"bnbSpent"</span>: <span class="json-string">"0.001 BNB"</span>,
+  <span class="json-key">"mintNumber"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"blockNumber"</span>: <span class="json-number">0</span>
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contract Configuration - Updated Address
+        const CONTRACT_ADDRESS = '0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C';
+        const BSC_RPC = 'https://bsc-dataseed.binance.org/';
+        const CONTRACT_ABI = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "mintCount",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
+
+        // Global variables
+        let web3;
+        let contract;
+        let userAccount = null;
+        let currentBlock = 68755518;
+        let mintCount = 3847;
+        let bnbCollected = 3.847;
+
+        // Initialize theme (default light)
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        // Toggle theme
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Documentation Modal Functions
+        function openDocs() {
+            document.getElementById('docsModal').classList.add('show');
+        }
+
+        function closeDocs() {
+            document.getElementById('docsModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('docsModal');
+            if (event.target == modal) {
+                closeDocs();
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update simulated data
+        setInterval(() => {
+            currentBlock++;
+        }, 3000);
+
+        setInterval(() => {
+            if (mintCount < 10000 && Math.random() > 0.3) {
+                const increase = Math.floor(Math.random() * 5) + 1;
+                mintCount = Math.min(mintCount + increase, 10000);
+                bnbCollected = (mintCount * 0.001).toFixed(3);
+            }
+        }, 5000);
+
+        // Toggle section
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.expand-icon');
+            const allSections = document.querySelectorAll('.api-content');
+            const allHeaders = document.querySelectorAll('.api-header');
+            const allIcons = document.querySelectorAll('.expand-icon');
+
+            allSections.forEach(section => {
+                if (section !== content) {
+                    section.classList.remove('show');
+                }
+            });
+
+            allHeaders.forEach(h => {
+                if (h !== header) {
+                    h.classList.remove('active');
+                }
+            });
+
+            allIcons.forEach(i => {
+                if (i !== icon) {
+                    i.classList.remove('expanded');
+                }
+            });
+
+            content.classList.toggle('show');
+            header.classList.toggle('active');
+            icon.classList.toggle('expanded');
+        }
+
+        // API Functions
+        function fetchHealthStatus(button) {
+            const container = document.getElementById('health-response');
+            button.innerHTML = 'Fetching...<span class="loading"></span>';
+            button.disabled = true;
+
+            setTimeout(() => {
+                container.classList.add('show');
+                button.innerHTML = 'Try It Out';
+                button.disabled = false;
+            }, 800);
+        }
+
+        function fetchContractStatus(button) {
+            const container = document.getElementById('status-response');
+            const jsonElement = document.getElementById('status-json');
+            button.innerHTML = 'Fetching...<span class="loading"></span>';
+            button.disabled = true;
+
+            setTimeout(() => {
+                jsonElement.innerHTML = `{
+  <span class="json-key">"contract"</span>: <span class="json-string">"0xB79CF61D6308c9Fbd33B9Cf743075E890380B61C"</span>,
+  <span class="json-key">"totalSupply"</span>: <span class="json-string">"500000000 BNB402"</span>,
+  <span class="json-key">"mintCount"</span>: <span class="json-number">${mintCount}</span>,
+  <span class="json-key">"bnbCollected"</span>: <span class="json-string">"${bnbCollected} BNB"</span>,
+  <span class="json-key">"blockNumber"</span>: <span class="json-number">${currentBlock}</span>,
+  <span class="json-key">"network"</span>: <span class="json-string">"BSC Mainnet"</span>
+}`;
+                container.classList.add('show');
+                button.innerHTML = 'Fetch Contract Status';
+                button.disabled = false;
+            }, 800);
+        }
+
+        function fetchPoolStatus(button) {
+            const container = document.getElementById('pool-response');
+            button.innerHTML = 'Fetching...<span class="loading"></span>';
+            button.disabled = true;
+
+            setTimeout(() => {
+                bnbCollected = (mintCount * 0.001).toFixed(3);
+                const progress = ((parseFloat(bnbCollected) / 10) * 100).toFixed(2);
+                const tokensDistributed = (mintCount * 50000).toLocaleString();
+                const mintActive = parseFloat(bnbCollected) < 10;
+                const liquidityAdded = parseFloat(bnbCollected) >= 10;
+
+                const preElement = container.querySelector('pre');
+                preElement.innerHTML = `{
+  <span class="json-key">"totalBnbCollected"</span>: <span class="json-string">"${bnbCollected} BNB"</span>,
+  <span class="json-key">"targetBnb"</span>: <span class="json-string">"10 BNB"</span>,
+  <span class="json-key">"progress"</span>: <span class="json-number">${progress}</span>,
+  <span class="json-key">"totalMints"</span>: <span class="json-number">${mintCount}</span>,
+  <span class="json-key">"maxMints"</span>: <span class="json-number">10000</span>,
+  <span class="json-key">"mintActive"</span>: <span class="json-boolean">${mintActive}</span>,
+  <span class="json-key">"liquidityAdded"</span>: <span class="json-boolean">${liquidityAdded}</span>,
+  <span class="json-key">"contractBalance"</span>: <span class="json-string">"${bnbCollected} BNB"</span>,
+  <span class="json-key">"tokensDistributed"</span>: <span class="json-string">"${tokensDistributed} BNB402"</span>
+}`;
+
+                container.classList.add('show');
+                button.innerHTML = 'Fetch Pool Status';
+                button.disabled = false;
+            }, 800);
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#f0b90b';
+                button.style.color = '#000';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#4a5568';
+                    button.style.color = 'white';
+                }, 2000);
+            });
+        }
+
+        function copyAddress() {
+            navigator.clipboard.writeText(CONTRACT_ADDRESS).then(() => {
+                showToast('Contract address copied!');
+            });
+        }
+
+        // Update batch info
+        function updateBatchInfo() {
+            const batchCount = parseInt(document.getElementById('batchCount').value) || 1;
+            const totalAmount = (batchCount * 0.001).toFixed(3);
+            const totalTokens = batchCount * 50000;
+            
+            document.getElementById('totalAmount').textContent = totalAmount + ' BNB';
+            document.getElementById('tokensToReceive').textContent = totalTokens.toLocaleString() + ' BNB402';
+        }
+
+        // Connect Wallet
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    showToast('Please install MetaMask!', 'error');
+                    return;
+                }
+
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                userAccount = accounts[0];
+
+                // Switch to BSC
+                try {
+                    await ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x38' }],
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                        await ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: '0x38',
+                                        chainName: 'Binance Smart Chain',
+                                        nativeCurrency: {
+                                            name: 'BNB',
+                                            symbol: 'BNB',
+                                            decimals: 18
+                                        },
+                                        rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                                blockExplorerUrls: ['https://bscscan.com/']
+                                    }]
+                                });
+                    }
+                }
+
+                web3 = new Web3(window.ethereum);
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Update UI
+                const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                document.getElementById('connectBtn').textContent = shortAddress;
+                document.getElementById('connectBtn').classList.add('connected');
+                document.getElementById('contractAddressDiv').textContent = shortAddress;
+                document.getElementById('bnbBalanceDiv').style.display = 'flex';
+
+                // Update balance
+                await updateBalance();
+
+                // Listen for account changes
+                ethereum.on('accountsChanged', handleAccountsChanged);
+                ethereum.on('chainChanged', () => window.location.reload());
+
+                showToast(`Wallet connected: ${shortAddress}`);
+
+            } catch (error) {
+                console.error('Connection error:', error);
+                showToast('Failed to connect wallet', 'error');
+            }
+        }
+
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // User disconnected
+                userAccount = null;
+                document.getElementById('connectBtn').textContent = 'Connect Wallet';
+                document.getElementById('connectBtn').classList.remove('connected');
+                document.getElementById('bnbBalanceDiv').style.display = 'none';
+                document.getElementById('contractAddressDiv').textContent = '0xB79CF...0B61C';
+            } else {
+                userAccount = accounts[0];
+                const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                document.getElementById('connectBtn').textContent = shortAddress;
+                document.getElementById('contractAddressDiv').textContent = shortAddress;
+                updateBalance();
+            }
+        }
+
+        async function updateBalance() {
+            if (!web3 || !userAccount) return;
+            
+            try {
+                const balance = await web3.eth.getBalance(userAccount);
+                const bnbBalance = web3.utils.fromWei(balance, 'ether');
+                document.getElementById('balanceAmount').textContent = parseFloat(bnbBalance).toFixed(4) + ' BNB';
+            } catch (error) {
+                console.error('Failed to get balance:', error);
+            }
+        }
+
+        // Execute batch mint
+        async function executeBatchMint() {
+            // Check if wallet is connected
+            if (!userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                await connectWallet();
+                return;
+            }
+            
+            const batchCount = parseInt(document.getElementById('batchCount').value) || 1;
+            const totalAmount = batchCount * 0.001;
+            
+            const mintButton = document.getElementById('mintButton');
+            mintButton.disabled = true;
+            mintButton.innerHTML = 'Processing Batch Mint...<span class="loading"></span>';
+            
+            try {
+                // Send BNB directly to contract address
+                const tx = await web3.eth.sendTransaction({
+                    from: userAccount,
+                    to: CONTRACT_ADDRESS,
+                    value: web3.utils.toWei(totalAmount.toString(), 'ether'),
+                    gas: 100000
+                });
+                
+                showToast(`Batch mint successful! TX: ${tx.transactionHash.substring(0, 10)}...`);
+                
+                // Update mint count
+                mintCount += batchCount;
+                
+                // Show response
+                const responseContainer = document.getElementById('mint-response');
+                const responseJson = document.getElementById('mint-response-json');
+                
+                responseJson.innerHTML = `{
+  <span class="json-key">"status"</span>: <span class="json-string">"success"</span>,
+  <span class="json-key">"txHash"</span>: <span class="json-string">"${tx.transactionHash}"</span>,
+  <span class="json-key">"batchCount"</span>: <span class="json-number">${batchCount}</span>,
+  <span class="json-key">"amountMinted"</span>: <span class="json-string">"${(batchCount * 50000).toLocaleString()} BNB402"</span>,
+  <span class="json-key">"bnbSpent"</span>: <span class="json-string">"${totalAmount.toFixed(3)} BNB"</span>,
+  <span class="json-key">"mintNumber"</span>: <span class="json-number">${mintCount}</span>,
+  <span class="json-key">"blockNumber"</span>: <span class="json-number">${currentBlock}</span>
+}`;
+                
+                responseContainer.style.display = 'block';
+                
+                // Update balance
+                await updateBalance();
+                
+            } catch (error) {
+                console.error('Batch mint error:', error);
+                
+                // Handle specific error cases
+                let errorMessage = '铸造失败';
+                if (error.message.includes('insufficient funds')) {
+                    errorMessage = '余额不足，请检查BNB余额';
+                } else if (error.message.includes('user rejected')) {
+                    errorMessage = '用户取消了交易';
+                } else if (error.message.includes('gas')) {
+                    errorMessage = 'Gas费用不足，请增加Gas限制';
+                } else if (error.message.includes('execution reverted')) {
+                    errorMessage = '合约执行失败，请检查合约状态';
+                } else if (error.message.includes('Transfer is restricted')) {
+                    errorMessage = '转账被限制，请稍后重试';
+                } else {
+                    errorMessage = error.message || '铸造失败，请重试';
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                mintButton.disabled = false;
+                mintButton.innerHTML = '批量请求mint api';
+            }
+        }
+
+        // Auto expand first section on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeader = document.querySelector('.api-header');
+            if (firstHeader) {
+                toggleSection(firstHeader);
+            }
+        });
+
+        // Update balance periodically if connected
+        setInterval(() => {
+            if (userAccount) {
+                updateBalance();
+            }
+        }, 10000);
+
+        // Check if already connected on load
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                const accounts = await ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    userAccount = accounts[0];
+                    web3 = new Web3(window.ethereum);
+                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    
+                    const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                    document.getElementById('connectBtn').textContent = shortAddress;
+                    document.getElementById('connectBtn').classList.add('connected');
+                    document.getElementById('contractAddressDiv').textContent = shortAddress;
+                    document.getElementById('bnbBalanceDiv').style.display = 'flex';
+                    
+                    updateBalance();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
